@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}My Assignments{% endblock %}
+
+{% block content %}
+<div class="page-content">
+  <div class="breadcrumb">
+    <a href="{% url 'student_dashboard' %}">Dashboard</a>
+    <span class="sep">›</span>
+    <span>Assignments</span>
+  </div>
+
+  <div class="page-header">
+    <h1>📄 My Assignments</h1>
+    <p>Download PDF assignments posted by your teachers.</p>
+  </div>
+
+  {% if assignments %}
+  <div style="display:flex;flex-direction:column;gap:14px;">
+    {% for assignment in assignments %}
+    <div class="assignment-card" style="animation-delay:{{ forloop.counter0 }}0ms">
+      <div class="assignment-info">
+        <h3>{{ assignment.title }}</h3>
+        <div class="assignment-meta">
+          <span class="badge badge-info">📖 {{ assignment.course.name }}</span>
+          <span class="badge badge-neutral">👨‍🏫 {{ assignment.teacher.user.get_full_name|default:assignment.teacher.user.username }}</span>
+        </div>
+        {% if assignment.description %}
+          <p style="margin-top:8px;font-size:.85rem;color:var(--text-muted);">{{ assignment.description }}</p>
+        {% endif %}
+        <div class="assignment-meta" style="margin-top:8px;">
+          <span style="font-size:.78rem;color:var(--text-muted);">📅 Due: <strong>{{ assignment.due_date }}</strong></span>
+          <span style="font-size:.78rem;color:var(--text-muted);">📌 Posted: {{ assignment.posted_on|date:"M d, Y" }}</span>
+        </div>
+      </div>
+      <div>
+        <a href="{% url 'download_assignment' assignment.pk %}" class="btn btn-primary btn-sm">
+          ⬇️ Download PDF
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>No Assignments Yet</h3>
+    <p>Your teachers haven't posted any assignments yet.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

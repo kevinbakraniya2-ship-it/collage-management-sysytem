@@ -1,0 +1,82 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="EduManage – College Management System for students, teachers and administration.">
+  <title>{% block title %}EduManage{% endblock %} | College Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'core/site.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- ── Navbar ──────────────────────────── -->
+  <nav class="navbar">
+    <a href="{% url 'home' %}" class="navbar-logo">
+      <div class="logo-icon">🎓</div>
+      Edu<span>Manage</span>
+    </a>
+
+    <div class="nav-actions">
+      {% if user.is_authenticated %}
+        <div class="nav-user">
+          <div class="nav-avatar">
+            {{ user.get_full_name|default:user.username|slice:":1"|upper }}
+          </div>
+          <div>
+            <div style="font-weight:600;color:var(--text);font-size:.875rem;">
+              {{ user.get_full_name|default:user.username }}
+            </div>
+          </div>
+          {% comment %}Role badge{% endcomment %}
+          {% if user.teacher_profile %}
+            <span class="nav-role-badge teacher">Teacher</span>
+          {% elif user.student_profile %}
+            <span class="nav-role-badge student">Student</span>
+          {% endif %}
+        </div>
+
+        {% if user.teacher_profile %}
+          <a href="{% url 'teacher_dashboard' %}" class="btn btn-outline btn-sm">Dashboard</a>
+        {% elif user.student_profile %}
+          <a href="{% url 'student_dashboard' %}" class="btn btn-outline btn-sm">Dashboard</a>
+        {% endif %}
+
+        <form method="post" action="{% url 'logout' %}" style="margin:0;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}" class="btn btn-primary" id="navbar-login-btn">🔐 Login</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- ── Messages ──────────────────────── -->
+  {% if messages %}
+    <div class="page-content" style="padding-bottom:0;padding-top:16px;">
+      <ul class="messages-list">
+        {% for message in messages %}
+          <li class="msg-alert {{ message.tags }}">
+            {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}❌{% elif message.tags == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+            {{ message }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <!-- ── Main Content ───────────────────── -->
+  {% block content %}{% endblock %}
+
+  <!-- ── Footer ────────────────────────── -->
+  <footer class="footer">
+    <p>🎓 EduManage &nbsp;·&nbsp; College Management System &nbsp;·&nbsp; Django Milestone 1</p>
+  </footer>
+
+</body>
+</html>

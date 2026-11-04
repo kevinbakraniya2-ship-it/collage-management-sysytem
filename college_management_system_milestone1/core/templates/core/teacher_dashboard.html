@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-content">
+
+  <!-- Welcome Banner -->
+  <div class="welcome-banner">
+    <div class="welcome-avatar">👨‍🏫</div>
+    <div class="welcome-text">
+      <h1>Welcome, {{ teacher.user.get_full_name|default:teacher.user.username }}!</h1>
+      <p>Here's your teacher portal. Manage your classes efficiently.</p>
+      <div class="welcome-meta">
+        <div class="welcome-meta-item">🆔 {{ teacher.employee_id }}</div>
+        <div class="welcome-meta-item">🏛️ {{ teacher.department.name }}</div>
+        <div class="welcome-meta-item">📚 {{ courses|length }} Course{{ courses|length|pluralize }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <h2 class="section-heading"><span class="dot"></span> Quick Actions</h2>
+  <div class="card-sm-grid" style="margin-bottom:36px;">
+    <a href="{% url 'mark_attendance' %}" class="action-card">
+      <div class="action-icon">✅</div>
+      <h3>Mark Attendance</h3>
+      <p>Record student attendance</p>
+    </a>
+    <a href="{% url 'enter_result' %}" class="action-card">
+      <div class="action-icon">📊</div>
+      <h3>Enter Results</h3>
+      <p>Submit assessment marks</p>
+    </a>
+    <a href="{% url 'teacher_students' %}" class="action-card">
+      <div class="action-icon">👥</div>
+      <h3>My Students</h3>
+      <p>Search &amp; view your roster</p>
+    </a>
+    <a href="{% url 'post_assignment' %}" class="action-card">
+      <div class="action-icon">📄</div>
+      <h3>Post Assignment</h3>
+      <p>Upload a PDF assignment</p>
+    </a>
+    <a href="{% url 'post_notice' %}" class="action-card">
+      <div class="action-icon">📢</div>
+      <h3>Post Notice</h3>
+      <p>Announce to your course</p>
+    </a>
+    <a href="{% url 'teacher_history' %}" class="action-card">
+      <div class="action-icon">📋</div>
+      <h3>My History</h3>
+      <p>View all past activity</p>
+    </a>
+    <a href="/admin/" class="action-card">
+      <div class="action-icon">⚙️</div>
+      <h3>Admin Panel</h3>
+      <p>Manage system data</p>
+    </a>
+  </div>
+
+  <!-- My Assignments -->
+  <h2 class="section-heading"><span class="dot"></span> My Posted Assignments</h2>
+  {% if assignments %}
+  <div class="history-list" style="margin-bottom:36px;">
+    {% for a in assignments %}
+    <div class="history-card" style="animation-delay:{{ forloop.counter0 }}0ms">
+      <div class="history-icon">📄</div>
+      <div class="history-body">
+        <div class="history-title">{{ a.title }}</div>
+        <div class="history-meta">
+          <span class="badge badge-info">{{ a.course.code }}</span>
+          <span class="badge badge-purple">Due: {{ a.due_date }}</span>
+          <span class="history-time">Posted: {{ a.posted_on|date:"d M Y" }}</span>
+        </div>
+      </div>
+      <div class="history-actions">
+        <a href="{% url 'edit_assignment' a.pk %}" class="btn btn-outline btn-sm">✏️ Edit</a>
+        <a href="{% url 'delete_assignment' a.pk %}" class="btn btn-danger btn-sm">🗑️</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state" style="margin-bottom:36px;">
+    <div class="empty-icon">📭</div>
+    <h3>Koi assignment post nahi ki</h3>
+    <p><a href="{% url 'post_assignment' %}" class="btn btn-primary btn-sm" style="margin-top:8px;">Post Assignment</a></p>
+  </div>
+  {% endif %}
+
+  <!-- My Notices -->
+  <h2 class="section-heading"><span class="dot"></span> My Posted Notices</h2>
+  {% if notices %}
+  <div class="history-list" style="margin-bottom:36px;">
+    {% for n in notices %}
+    <div class="history-card" style="animation-delay:{{ forloop.counter0 }}0ms">
+      <div class="history-icon">{% if n.important %}🔴{% else %}📢{% endif %}</div>
+      <div class="history-body">
+        <div class="history-title">
+          {{ n.title }}
+          {% if n.important %}<span class="badge" style="background:var(--danger-soft);color:var(--danger);margin-left:6px;">Important</span>{% endif %}
+        </div>
+        <div class="history-meta">
+          <span class="badge badge-info">{{ n.course.code }}</span>
+          <span class="history-time">{{ n.posted_on|date:"d M Y" }}</span>
+        </div>
+      </div>
+      <div class="history-actions">
+        <a href="{% url 'edit_notice' n.pk %}" class="btn btn-outline btn-sm">✏️ Edit</a>
+        <a href="{% url 'delete_notice' n.pk %}" class="btn btn-danger btn-sm">🗑️</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state" style="margin-bottom:36px;">
+    <div class="empty-icon">📭</div>
+    <h3>Koi notice post nahi kiya</h3>
+    <p><a href="{% url 'post_notice' %}" class="btn btn-primary btn-sm" style="margin-top:8px;">Post Notice</a></p>
+  </div>
+  {% endif %}
+
+  <!-- My Courses -->
+  <h2 class="section-heading"><span class="dot"></span> My Assigned Courses</h2>
+  {% if courses %}
+  <div class="card-grid">
+    {% for course in courses %}
+    <div class="card" style="animation-delay:{{ forloop.counter0 }}0ms">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
+        <div style="width:44px;height:44px;background:var(--primary-bg);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;">📖</div>
+        <div>
+          <div style="font-weight:700;font-size:.95rem;">{{ course.name }}</div>
+          <div style="font-size:.78rem;font-family:monospace;color:var(--text-muted);background:var(--border);padding:2px 6px;border-radius:4px;display:inline-block;margin-top:2px;">{{ course.code }}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+        <span class="badge badge-info">🏛️ {{ course.department.name }}</span>
+        <span class="badge badge-purple">{{ course.duration_years }} yr</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>No Courses Assigned</h3>
+    <p>Contact the admin to get courses assigned to your profile.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Delete {{ item_type }}{% endblock %}
+{% block content %}
+<div class="page-content">
+  <div class="form-hero">
+    <div class="form-hero-icon">🗑️</div>
+    <h1>Delete {{ item_type }}</h1>
+    <p>Kya tum sach mein yeh {{ item_type|lower }} delete karna chahte ho?</p>
+  </div>
+
+  <div class="form-card" style="max-width:520px;margin:0 auto;">
+    <div class="msg-alert error" style="margin-bottom:20px;">
+      ❌ <strong>{{ item }}</strong> — yeh action undo nahi ho sakta!
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      <div style="display:flex;gap:12px;">
+        <button type="submit" class="btn btn-danger">🗑️ Haan, Delete Karo</button>
+        <a href="{% url 'teacher_dashboard' %}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

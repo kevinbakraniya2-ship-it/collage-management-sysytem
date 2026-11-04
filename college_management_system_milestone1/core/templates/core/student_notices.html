@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Course Notices{% endblock %}
+
+{% block content %}
+<div class="page-content">
+  <div class="breadcrumb">
+    <a href="{% url 'student_dashboard' %}">Dashboard</a>
+    <span class="sep">›</span>
+    <span>Notices</span>
+  </div>
+
+  <div class="page-header">
+    <h1>📢 Course Notices</h1>
+    <p>Important announcements from your teachers.</p>
+  </div>
+
+  {% if notices %}
+  <div style="display:flex;flex-direction:column;gap:14px;">
+    {% for notice in notices %}
+    <div class="notice-card {% if notice.important %}important{% endif %}" style="animation-delay:{{ forloop.counter0 }}0ms">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;flex-wrap:wrap;">
+        <h3>
+          {% if notice.important %}🔔 {% endif %}{{ notice.title }}
+        </h3>
+        <div style="display:flex;gap:8px;">
+          {% if notice.important %}
+            <span class="badge badge-warning">⚠️ Important</span>
+          {% endif %}
+          <span class="badge badge-info">{{ notice.course.code }}</span>
+        </div>
+      </div>
+      <p>{{ notice.message }}</p>
+      <div class="notice-footer">
+        <span>👨‍🏫 {{ notice.teacher.user.get_full_name|default:notice.teacher.user.username }}</span>
+        <span>📖 {{ notice.course.name }}</span>
+        <span>📅 {{ notice.posted_on|date:"M d, Y H:i" }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>No Notices Yet</h3>
+    <p>Your teachers haven't posted any notices yet.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

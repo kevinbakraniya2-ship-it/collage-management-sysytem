@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Edit Notice{% endblock %}
+{% block content %}
+<div class="page-content">
+  <div class="form-hero">
+    <div class="form-hero-icon">📢</div>
+    <h1>Edit Notice</h1>
+    <p>Update your notice details below.</p>
+  </div>
+
+  <div class="form-card">
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="field-group">
+          <label class="field-label" for="{{ field.id_for_label }}">
+            {{ field.label }}
+          </label>
+          {{ field }}
+          {% if field.help_text %}
+            <div class="field-help">{{ field.help_text }}</div>
+          {% endif %}
+          {% for err in field.errors %}
+            <div class="field-error">⚠ {{ err }}</div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      {% if form.non_field_errors %}
+        <div class="field-error" style="margin-bottom:12px;">
+          {% for err in form.non_field_errors %}⚠ {{ err }}<br>{% endfor %}
+        </div>
+      {% endif %}
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+        <a href="{% url 'teacher_dashboard' %}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

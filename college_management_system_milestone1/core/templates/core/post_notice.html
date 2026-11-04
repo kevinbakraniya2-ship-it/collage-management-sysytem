@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Post Notice{% endblock %}
+
+{% block content %}
+<div class="page-content">
+  <div class="breadcrumb">
+    <a href="{% url 'teacher_dashboard' %}">Dashboard</a>
+    <span class="sep">›</span>
+    <span>Post Notice</span>
+  </div>
+
+  <div class="form-card">
+    <div class="form-card-header">
+      <h1>📢 Post Course Notice</h1>
+      <p>Announce important information to your course students</p>
+    </div>
+    <div class="form-card-body">
+      {% if form.non_field_errors %}
+        <div class="form-error-banner">
+          {% for error in form.non_field_errors %}⚠️ {{ error }}{% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group {% if field.field.widget.input_type == 'checkbox' %}form-check{% endif %}">
+          {% if field.field.widget.input_type == 'checkbox' %}
+            {{ field }}
+            <label for="{{ field.id_for_label }}" style="margin-bottom:0;">{{ field.label }}</label>
+          {% else %}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+          {% endif %}
+          {% if field.errors %}
+            <ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
+          📢 Publish Notice
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
