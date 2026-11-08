@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Mark Attendance{% endblock %}
+
+{% block content %}
+<div class="page-content">
+  <div class="breadcrumb">
+    <a href="{% url 'teacher_dashboard' %}">Dashboard</a>
+    <span class="sep">›</span>
+    <span>Mark Attendance</span>
+  </div>
+
+  <div class="form-card">
+    <div class="form-card-header">
+      <h1>✅ Mark Attendance</h1>
+      <p>Select enrollment, date, and status to record attendance</p>
+    </div>
+    <div class="form-card-body">
+      {% if form.non_field_errors %}
+        <div class="form-error-banner">
+          {% for error in form.non_field_errors %}⚠️ {{ error }}{% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
+          ✅ Save Attendance
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}My Activity History{% endblock %}
+{% block content %}
+<div class="page-content">
+
+  <div class="welcome-banner">
+    <div class="welcome-avatar">📋</div>
+    <div class="welcome-text">
+      <h1>Activity History</h1>
+      <p>{{ teacher.user.get_full_name|default:teacher.user.username }} ke saare actions ka record.</p>
+    </div>
+  </div>
+
+  <!-- Assignments Posted -->
+  <h2 class="section-heading"><span class="dot"></span> Assignments Posted</h2>
+  {% if assignments %}
+  <div class="history-list">
+    {% for a in assignments %}
+    <div class="history-card" style="animation-delay:{{ forloop.counter0 }}0ms">
+      <div class="history-icon">📄</div>
+      <div class="history-body">
+        <div class="history-title">{{ a.title }}</div>
+        <div class="history-meta">
+          <span class="badge badge-info">{{ a.course.code }}</span>
+          <span class="badge badge-purple">Due: {{ a.due_date }}</span>
+          <span class="history-time">Posted: {{ a.posted_on|date:"d M Y, H:i" }}</span>
+        </div>
+      </div>
+      <div class="history-actions">
+        <a href="{% url 'edit_assignment' a.pk %}" class="btn btn-outline btn-sm">✏️ Edit</a>
+        <a href="{% url 'delete_assignment' a.pk %}" class="btn btn-danger btn-sm">🗑️</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state"><div class="empty-icon">📭</div><h3>Koi assignment post nahi ki</h3></div>
+  {% endif %}
+
+  <!-- Notices Posted -->
+  <h2 class="section-heading" style="margin-top:40px;"><span class="dot"></span> Notices Posted</h2>
+  {% if notices %}
+  <div class="history-list">
+    {% for n in notices %}
+    <div class="history-card" style="animation-delay:{{ forloop.counter0 }}0ms">
+      <div class="history-icon">{% if n.important %}🔴{% else %}📢{% endif %}</div>
+      <div class="history-body">
+        <div class="history-title">{{ n.title }}{% if n.important %} <span class="badge" style="background:var(--danger-soft);color:var(--danger);">Important</span>{% endif %}</div>
+        <div class="history-meta">
+          <span class="badge badge-info">{{ n.course.code }}</span>
+          <span class="history-time">{{ n.posted_on|date:"d M Y, H:i" }}</span>
+        </div>
+        <p style="font-size:.82rem;color:var(--text-muted);margin-top:4px;">{{ n.message|truncatechars:100 }}</p>
+      </div>
+      <div class="history-actions">
+        <a href="{% url 'edit_notice' n.pk %}" class="btn btn-outline btn-sm">✏️ Edit</a>
+        <a href="{% url 'delete_notice' n.pk %}" class="btn btn-danger btn-sm">🗑️</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state"><div class="empty-icon">📭</div><h3>Koi notice post nahi kiya</h3></div>
+  {% endif %}
+
+  <!-- Attendance Marked -->
+  <h2 class="section-heading" style="margin-top:40px;"><span class="dot"></span> Attendance Records (Last 50)</h2>
+  {% if attendances %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Course</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for att in attendances %}
+        <tr>
+          <td>{{ att.enrollment.student.user.get_full_name|default:att.enrollment.student.roll_number }}</td>
+          <td><span class="badge badge-info">{{ att.enrollment.course.code }}</span></td>
+          <td>{{ att.attendance_date|date:"d M Y" }}</td>
+          <td>
+            {% if att.status == 'present' %}<span class="badge badge-success">✅ Present</span>
+            {% elif att.status == 'absent' %}<span class="badge badge-danger">❌ Absent</span>
+            {% elif att.status == 'late' %}<span class="badge badge-warning">⏰ Late</span>
+            {% else %}<span class="badge">{{ att.get_status_display }}</span>{% endif %}
+          </td>
+          <td>{{ att.remarks|default:"—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><div class="empty-icon">📭</div><h3>Koi attendance record nahi</h3></div>
+  {% endif %}
+
+  <!-- Results Entered -->
+  <h2 class="section-heading" style="margin-top:40px;"><span class="dot"></span> Results Entered (Last 50)</h2>
+  {% if results %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Assessment</th>
+          <th>Course</th>
+          <th>Marks</th>
+          <th>Max Marks</th>
+          <th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for res in results %}
+        <tr>
+          <td>{{ res.enrollment.student.user.get_full_name|default:res.enrollment.student.roll_number }}</td>
+          <td>{{ res.assessment.title }}</td>
+          <td><span class="badge badge-info">{{ res.assessment.course.code }}</span></td>
+          <td><strong>{{ res.marks_obtained }}</strong></td>
+          <td>{{ res.assessment.max_marks }}</td>
+          <td>{{ res.remarks|default:"—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><div class="empty-icon">📭</div><h3>Koi result enter nahi kiya</h3></div>
+  {% endif %}
+
+</div>
+{% endblock %}

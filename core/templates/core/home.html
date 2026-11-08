@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="page-content" style="padding-top:40px;">
+  <div class="hero" style="padding-top:20px;">
+    <div class="hero-badge">
+      <span>🎓</span> Django Milestone 1
+    </div>
+    <h1>Welcome to EduManage</h1>
+    <p>
+      A modern college management platform connecting teachers and students.
+      Track attendance, results, assignments, and notices — all in one place.
+    </p>
+    {% if not user.is_authenticated %}
+    <div class="hero-actions">
+      <a href="{% url 'login' %}" class="btn btn-primary btn-lg">🔐 Login to Continue</a>
+    </div>
+    {% else %}
+    <div class="hero-actions">
+      {% if user.teacher_profile %}
+        <a href="{% url 'teacher_dashboard' %}" class="btn btn-primary btn-lg">Go to Dashboard →</a>
+      {% elif user.student_profile %}
+        <a href="{% url 'student_dashboard' %}" class="btn btn-primary btn-lg">Go to Dashboard →</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Departments -->
+  {% if departments %}
+  <div style="margin-top:20px;">
+    <h2 class="section-heading">
+      <span class="dot"></span> Our Departments &amp; Courses
+    </h2>
+
+    <div class="card-grid">
+      {% for dept in departments %}
+      <div class="dept-card" style="animation-delay:{{ forloop.counter0 }}00ms">
+        <div class="dept-header">
+          <div class="dept-icon">🏛️</div>
+          <div>
+            <div class="dept-name">{{ dept.name }}</div>
+            <div class="dept-code">{{ dept.code }}</div>
+          </div>
+        </div>
+        {% if dept.description %}
+          <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:14px;">{{ dept.description }}</p>
+        {% endif %}
+        <ul class="course-list">
+          {% for course in dept.courses.all %}
+            <li class="course-item">
+              <div>
+                <div class="course-name">{{ course.name }}</div>
+                <div class="course-code">{{ course.code }}</div>
+              </div>
+              <span class="badge badge-info">{{ course.duration_years }} yr</span>
+            </li>
+          {% empty %}
+            <li style="font-size:.85rem;color:var(--text-muted);padding:8px 0;">No courses added yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <div class="empty-state" style="margin-top:40px;">
+    <div class="empty-icon">🏛️</div>
+    <h3>No Departments Yet</h3>
+    <p>Departments will appear here once added by the admin.</p>
+    <a href="/admin/" class="btn btn-outline" style="margin-top:16px;">Open Admin Panel</a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

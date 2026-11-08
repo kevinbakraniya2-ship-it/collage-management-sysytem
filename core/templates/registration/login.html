@@ -1,0 +1,214 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Login to EduManage – College Management System">
+  <title>Login | EduManage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'core/site.css' %}">
+  <style>
+    /* Login page overrides body padding */
+    body { padding-top: 0; }
+    .login-full-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .login-left {
+      background: linear-gradient(160deg, #3730a3 0%, #7c3aed 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 40px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-left::before {
+      content: '';
+      position: absolute; top: -100px; left: -100px;
+      width: 350px; height: 350px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+    }
+    .login-left::after {
+      content: '';
+      position: absolute; bottom: -80px; right: -80px;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.05);
+    }
+    .login-left-content { position: relative; z-index: 1; text-align: center; max-width: 340px; }
+    .login-left .big-icon {
+      font-size: 5rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+    .login-left h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -.04em;
+      margin-bottom: 12px;
+    }
+    .login-left p {
+      font-size: .95rem;
+      opacity: .8;
+      line-height: 1.7;
+    }
+    .login-feature-list {
+      list-style: none;
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      text-align: left;
+    }
+    .login-feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .9rem;
+      opacity: .9;
+    }
+    .feat-icon {
+      width: 32px; height: 32px;
+      background: rgba(255,255,255,.15);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .login-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f0f4ff;
+      padding: 48px 32px;
+    }
+    .login-card-inner {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(79,70,229,.15);
+      overflow: hidden;
+      animation: fadeInUp .5s ease both;
+    }
+    .login-inner-header {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      padding: 28px 32px 22px;
+      text-align: center;
+      color: #fff;
+    }
+    .login-inner-header .logo-mark {
+      width: 56px; height: 56px;
+      background: rgba(255,255,255,.2);
+      border-radius: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin: 0 auto 14px;
+    }
+    .login-inner-header h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -.03em; }
+    .login-inner-header p  { font-size: .83rem; opacity: .8; margin-top: 4px; }
+    .login-inner-body { padding: 28px 32px 32px; }
+    @media (max-width: 768px) {
+      .login-full-page { grid-template-columns: 1fr; }
+      .login-left { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-full-page">
+
+    <!-- left panel -->
+    <div class="login-left">
+      <div class="login-left-content">
+        <span class="big-icon">🎓</span>
+        <h2>EduManage</h2>
+        <p>Your all-in-one college management platform for students and teachers.</p>
+        <ul class="login-feature-list">
+          <li><span class="feat-icon">📊</span> Track attendance & results</li>
+          <li><span class="feat-icon">📋</span> Manage assignments & notices</li>
+          <li><span class="feat-icon">🔐</span> Role-based secure access</li>
+          <li><span class="feat-icon">🏛️</span> Manage courses & departments</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- right panel – the actual form -->
+    <div class="login-right">
+      <div class="login-card-inner">
+        <div class="login-inner-header">
+          <div class="logo-mark">🔐</div>
+          <h1>Welcome Back!</h1>
+          <p>Login as Teacher or Student to continue</p>
+        </div>
+
+        <div class="login-inner-body">
+
+          {% if form.errors %}
+            <div class="form-error-banner">
+              ⚠️ Username ya password galat hai. Dobara check karo.
+            </div>
+          {% endif %}
+
+          <form method="post" id="login-form">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <div class="form-group">
+              <label for="id_username">👤 Username</label>
+              <input
+                type="text"
+                id="id_username"
+                name="username"
+                autofocus
+                autocomplete="username"
+                placeholder="Enter your username"
+                value="{{ form.username.value|default:'' }}"
+              >
+              {% if form.username.errors %}
+                <ul class="errorlist">{% for e in form.username.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              <label for="id_password">🔑 Password</label>
+              <input
+                type="password"
+                id="id_password"
+                name="password"
+                autocomplete="current-password"
+                placeholder="Enter your password"
+              >
+              {% if form.password.errors %}
+                <ul class="errorlist">{% for e in form.password.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+              {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;margin-top:8px;">
+              🚀 Login
+            </button>
+          </form>
+
+          <p style="text-align:center;margin-top:20px;font-size:.82rem;color:var(--text-muted);">
+            Home par wapas jao: <a href="{% url 'home' %}">EduManage Home ↗</a>
+          </p>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

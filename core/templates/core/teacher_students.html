@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}My Students{% endblock %}
+
+{% block content %}
+<div class="page-content">
+  <div class="breadcrumb">
+    <a href="{% url 'teacher_dashboard' %}">Dashboard</a>
+    <span class="sep">›</span>
+    <span>My Students</span>
+  </div>
+
+  <div class="page-header">
+    <h1>👥 Student Roster</h1>
+    <p>Search and view students enrolled in your courses.</p>
+  </div>
+
+  <!-- Search -->
+  <form method="get" class="search-bar" style="margin-bottom:20px;">
+    <input
+      type="search"
+      name="q"
+      id="search-students"
+      value="{{ query }}"
+      placeholder="🔍 Search by name, roll number, or course..."
+      autofocus
+    >
+    <button type="submit" class="btn btn-primary">Search</button>
+    {% if query %}
+      <a href="{% url 'teacher_students' %}" class="btn btn-outline">Clear</a>
+    {% endif %}
+  </form>
+
+  {% if page_obj %}
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Roll No.</th>
+          <th>Student Name</th>
+          <th>Course</th>
+          <th>Academic Year</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for enrollment in page_obj %}
+        <tr>
+          <td><span style="font-family:monospace;font-weight:600;color:var(--primary);">{{ enrollment.student.roll_number }}</span></td>
+          <td>{{ enrollment.student.user.get_full_name|default:enrollment.student.user.username }}</td>
+          <td>
+            <div style="font-weight:500;">{{ enrollment.course.name }}</div>
+            <div style="font-size:.78rem;color:var(--text-muted);">{{ enrollment.course.code }}</div>
+          </td>
+          <td>{{ enrollment.academic_year }}</td>
+          <td>
+            {% if enrollment.status == 'active' %}
+              <span class="badge badge-success">● Active</span>
+            {% elif enrollment.status == 'completed' %}
+              <span class="badge badge-info">✓ Completed</span>
+            {% else %}
+              <span class="badge badge-danger">Withdrawn</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">‹</a>
+      {% endif %}
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <span class="current">{{ num }}</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">›</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">🔍</div>
+    <h3>No Students Found</h3>
+    <p>{% if query %}No students match "{{ query }}". Try a different search.{% else %}No students enrolled in your courses yet.{% endif %}</p>
+    {% if query %}<a href="{% url 'teacher_students' %}" class="btn btn-outline" style="margin-top:16px;">Clear Search</a>{% endif %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

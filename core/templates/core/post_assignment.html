@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Post Assignment{% endblock %}
+
+{% block content %}
+<div class="page-content">
+  <div class="breadcrumb">
+    <a href="{% url 'teacher_dashboard' %}">Dashboard</a>
+    <span class="sep">›</span>
+    <span>Post Assignment</span>
+  </div>
+
+  <div class="form-card">
+    <div class="form-card-header">
+      <h1>📄 Post Assignment</h1>
+      <p>Upload a PDF assignment for your course students (max 5 MB)</p>
+    </div>
+    <div class="form-card-body">
+      {% if form.non_field_errors %}
+        <div class="form-error-banner">
+          {% for error in form.non_field_errors %}⚠️ {{ error }}{% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <p style="font-size:.78rem;color:var(--text-muted);margin-top:4px;">{{ field.help_text }}</p>
+          {% endif %}
+          {% if field.errors %}
+            <ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
+          📤 Upload Assignment
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

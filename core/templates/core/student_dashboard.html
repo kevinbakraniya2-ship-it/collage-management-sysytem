@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-content">
+
+  <!-- Welcome Banner -->
+  <div class="welcome-banner">
+    <div class="welcome-avatar">👨‍🎓</div>
+    <div class="welcome-text">
+      <h1>Welcome, {{ student.user.get_full_name|default:student.user.username }}!</h1>
+      <p>Here are your enrolled courses, attendance records, and results.</p>
+      <div class="welcome-meta">
+        <div class="welcome-meta-item">🎫 {{ student.roll_number }}</div>
+        <div class="welcome-meta-item">🏛️ {{ student.department.name }}</div>
+        <div class="welcome-meta-item">📚 {{ enrollments|length }} Course{{ enrollments|length|pluralize }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="quick-links" style="margin-bottom:28px;">
+    <a href="{% url 'student_assignments' %}" class="btn btn-outline">📄 My Assignments</a>
+    <a href="{% url 'student_notices' %}" class="btn btn-outline">📢 Course Notices</a>
+  </div>
+
+  <!-- Enrollments -->
+  <h2 class="section-heading"><span class="dot"></span> My Enrolled Courses</h2>
+
+  {% if enrollments %}
+  <div style="display:flex;flex-direction:column;gap:20px;">
+    {% for enrollment in enrollments %}
+    <div class="enrollment-card" style="animation-delay:{{ forloop.counter0 }}00ms">
+      <div class="enrollment-card-header">
+        <div>
+          <div class="enrollment-course-name">{{ enrollment.course.name }}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+            <span class="enrollment-course-code">{{ enrollment.course.code }}</span>
+            <span class="badge badge-neutral">{{ enrollment.academic_year }}</span>
+          </div>
+        </div>
+        <div>
+          {% if enrollment.status == 'active' %}
+            <span class="badge badge-success">● Active</span>
+          {% elif enrollment.status == 'completed' %}
+            <span class="badge badge-info">✓ Completed</span>
+          {% else %}
+            <span class="badge badge-danger">Withdrawn</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="enrollment-card-body">
+        <!-- Attendance -->
+        <div class="enrollment-sub-section">
+          <div class="enrollment-sub-title">📅 Attendance</div>
+          {% if enrollment.attendance_records.all %}
+            {% for record in enrollment.attendance_records.all|slice:":5" %}
+            <div class="att-record">
+              <span>{{ record.attendance_date }}</span>
+              <div style="display:flex;align-items:center;gap:8px;">
+                {% if record.remarks %}<span style="font-size:.78rem;color:var(--text-muted);">{{ record.remarks }}</span>{% endif %}
+                {% if record.status == 'present' %}
+                  <span class="badge badge-success">Present</span>
+                {% elif record.status == 'absent' %}
+                  <span class="badge badge-danger">Absent</span>
+                {% elif record.status == 'late' %}
+                  <span class="badge badge-warning">Late</span>
+                {% else %}
+                  <span class="badge badge-neutral">Excused</span>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+            {% if enrollment.attendance_records.count > 5 %}
+              <p style="font-size:.8rem;color:var(--text-muted);margin-top:6px;">...and {{ enrollment.attendance_records.count|add:"-5" }} more records</p>
+            {% endif %}
+          {% else %}
+            <p style="font-size:.85rem;color:var(--text-muted);padding:10px 0;">Abhi koi attendance record nahi hai.</p>
+          {% endif %}
+        </div>
+
+        <!-- Results -->
+        <div class="enrollment-sub-section" style="margin-bottom:0;">
+          <div class="enrollment-sub-title">📊 Results</div>
+          {% if enrollment.results.all %}
+            {% for result in enrollment.results.all %}
+            <div class="result-record">
+              <span style="font-weight:500;">{{ result.assessment.title }}</span>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div class="score-bar-wrap">
+                  <div class="score-bar" style="width:{% widthratio result.marks_obtained result.assessment.max_marks 100 %}%"></div>
+                </div>
+                <span style="font-size:.85rem;font-weight:600;color:var(--primary);">
+                  {{ result.marks_obtained }} / {{ result.assessment.max_marks }}
+                </span>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <p style="font-size:.85rem;color:var(--text-muted);padding:10px 0;">Abhi koi result record nahi hai.</p>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>No Enrollments Yet</h3>
+    <p>Contact the admin to enroll in a course.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
