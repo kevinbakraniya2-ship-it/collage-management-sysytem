@@ -8,6 +8,10 @@ A Django website for keeping college academic records in one place. Staff manage
 - Gives teachers and students role-specific dashboards after sign-in.
 - Lets teachers search and paginate their course rosters.
 - Lets teachers record attendance and assessment results for their assigned courses.
+
+https://github.com/user-attachments/assets/6c460b63-4001-4139-98d7-fd89a949085d
+
+
 - Lets teachers post course assignments and notices.
 - Restricts assignment downloads to students enrolled in that course.
 - Uses Django forms, validation, database constraints, and the Django ORM to protect and manage records.
